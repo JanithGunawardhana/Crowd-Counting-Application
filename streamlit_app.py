@@ -1,7 +1,7 @@
 from random import randint
 import tempfile
 import time
-import cv2
+from cv2 import cv2
 import urllib
 import matplotlib.pyplot as plt
 import numpy as np
