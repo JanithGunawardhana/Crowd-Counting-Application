@@ -2,6 +2,7 @@ from random import randint
 import tempfile
 import time
 import cv2
+import urllib
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
@@ -10,6 +11,12 @@ from streamlit.server.server import Server
 
 from crowd_count_prediction import get_image_prediction
 from session_state import SessionState
+
+#@st.cache(show_spinner=False)
+def get_file_content_as_string(path):
+    url = 'https://raw.githubusercontent.com/JanithGunawardhana/Crowd-Counting-Application/main/' + path
+    response = urllib.request.urlopen(url)
+    return response.read().decode("utf-8")
 
 def trigger_rerun():
     session_infos = Server.get_current()._session_info_by_id.values() 
@@ -88,6 +95,7 @@ def main():
     if app_mode == "Project Details":
         st.title("Crowd Density Monitoring")
         st.write("Multi Layered Deep Neural Network for Feature Extraction in Cross Domain Crowd Counting")
+        readme_text = st.markdown(get_file_content_as_string("README.md"))
 
     elif app_mode == "Image Based Crowd Counting":
         st.title("Image Based Crowd Counting")
