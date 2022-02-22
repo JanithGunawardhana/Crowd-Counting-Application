@@ -14,7 +14,7 @@ Automated crowd density monitoring is an emerging area of research. It is a vita
 
 3. Focus on automating the crowd density monitoring process with the use of an inexpensive hardware setup.
 
-## Proposed CNN based model architecture
+## Proposed CNN based Model Architecture
 
 ![Alt text](/Images/model.jpeg?raw=true "Proposed Model Architecture with Frontend and Backend Networks")
 
