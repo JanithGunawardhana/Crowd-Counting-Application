@@ -16,11 +16,10 @@ Automated crowd density monitoring is an emerging area of research. It is a vita
 
 ## Proposed CNN based Model Architecture
 
-![Alt text](/Images/model.jpeg?raw=true "Proposed Model Architecture with Frontend and Backend Networks")
+![Model Image](https://github.com/JanithGunawardhana/Crowd-Counting-Application/blob/main/Images/model.jpeg "Proposed Model Architecture with Frontend and Backend Networks")
 
 Proposed multi layered model architecture consists of two components as,
 
-1) Frontend Network containing VGG 16 classifier and five feature generation levels as P5, P4, P3, P2, P1 for
-predicting density maps in high quality with multi-scale feature representation.
+1) Frontend Network containing VGG 16 classifier and five feature generation levels as P5, P4, P3, P2, P1 for predicting density maps in high quality with multi-scale feature representation.
 
 2) Backend network containing five multi-module branches and a dilationconvolution network for scale variation feature extractions to increase the accuracy in crowd count estimations while maintaining the resolution and high quality of generated density maps.
