@@ -36,12 +36,15 @@ def ProcessFrames(vf, stop):
 
 
     frame_counter = 0
-    _stop = stop.button("stop")
-    crowd_count_txt = st.empty()
-    fps_meas_txt = st.empty()
+    _stop = stop.button("Stop Processing")
     bar = st.progress(frame_counter)
-    real_frame = st.empty()
-    density_map_frame = st.empty()
+    col1, col2 = st.columns(2)
+    with col1:
+        fps_meas_txt = st.empty()
+        real_frame = st.empty()
+    with col2:
+        crowd_count_txt = st.empty()
+        density_map_frame = st.empty()
     start = time.time()
 
     while vf.isOpened():
@@ -59,14 +62,6 @@ def ProcessFrames(vf, stop):
         density_map_show = cv2.normalize(density_map, density_map_show, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         density_map_show = cv2.applyColorMap(density_map_show, cv2.COLORMAP_JET)
         density_map_final = cv2.cvtColor(density_map_show, cv2.COLOR_RGB2BGR)
-        #st.image(frame, caption='Input Image', use_column_width=True)
-        #st.image(density_map_show, caption='Density Map', use_column_width=True, channels='BGR')
-        #st.success('Crowd Count: ' + str(crowd_count))
-
-        # labels, current_boxes, confidences = obj_detector.ForwardPassOutput(frame)
-        # frame = tc.drawBoxes(frame, labels, current_boxes, confidences) 
-        # new_car_count = tracker.TrackCars(current_boxes)
-        # new_car_count_txt.markdown(f'**Total car count:** {new_car_count}')
 
         end = time.time()
 
@@ -76,15 +71,8 @@ def ProcessFrames(vf, stop):
         crowd_count_txt.markdown(f'**Crowd Count:** {crowd_count}')
         bar.progress(frame_counter/num_frames)
 
-        # col1, col2 = st.columns(2)
-        # col1.header("Original")
-        # col1.image(frame, use_column_width=True)
-
-        # col2.header("Grayscale")
-        # col2.image(density_map_final, use_column_width=True)
-
-        real_frame.image(frame, width = 500)
-        density_map_frame.image(density_map_final, width = 500)
+        real_frame.image(frame)
+        density_map_frame.image(density_map_final)
 
 def main():
     st.sidebar.title("Settings")
@@ -135,16 +123,14 @@ def main():
             vf = cv2.VideoCapture(tfile.name)
 
             if not state.run:
-                start = start_button.button("start")
+                start = start_button.button("Start Processing")
                 state.start = start
             
             if state.start:
                 start_button.empty()
                 #state.upload_key = str(randint(1000, int(1e6)))
                 state.enabled = False
-                print("Test1")
                 if state.run:
-                    print("Test2")
                     tfile.close()
                     f.close()
                     state.upload_key = str(randint(1000, int(1e6)))
@@ -152,7 +138,6 @@ def main():
                     state.run = False
                     ProcessFrames(vf, stop_button)
                 else:
-                    print("Test3")
                     state.run = True
                     trigger_rerun()
     
@@ -178,11 +163,14 @@ def main():
         if not st.session_state['video_session_input_state']:
             vcap = cv2.VideoCapture(st.session_state['url'])
             frame_counter = 0
-            stop_process = st.button('Stop Process')
-            fps_meas_txt = st.empty()
-            crowd_count_txt = st.empty()
-            real_frame = st.empty()
-            density_map_frame = st.empty()
+            stop_process = st.button('Stop Processing')
+            col1, col2 = st.columns(2)
+            with col1:
+                fps_meas_txt = st.empty()
+                real_frame = st.empty()
+            with col2:
+                crowd_count_txt = st.empty()
+                density_map_frame = st.empty()
             start = time.time()
 
             while(True):
@@ -208,8 +196,8 @@ def main():
                     fps_meas_txt.markdown(f'**Frames per second:** {fps_measurement:.2f}')
                     crowd_count_txt.markdown(f'**Crowd Count:** {crowd_count}')
 
-                    real_frame.image(frame, width = 500)
-                    density_map_frame.image(density_map_final, width = 500)
+                    real_frame.image(frame)
+                    density_map_frame.image(density_map_final)
                 else:
                     break
 
