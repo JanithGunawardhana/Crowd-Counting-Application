@@ -101,17 +101,20 @@ def main():
         st.title("Image Based Crowd Counting")
         st.write("Select any image and get corresponding density map with crowd count")
         uploaded_file = st.file_uploader("Choose an image...")
+        col1, col2 = st.columns(2)
         if uploaded_file is not None:
             image = Image.open(uploaded_file)	
             img_array = np.array(image)
             color_converted_image = cv2.cvtColor(img_array, cv2.COLOR_BGR2RGB)
-            st.image(uploaded_file, caption='Input Image', use_column_width=True)
-            with st.spinner('Processing...'):    
-                crowd_count, density_map = get_image_prediction(color_converted_image)
-            density_map_show = None
-            density_map_show = cv2.normalize(density_map, density_map_show, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-            density_map_show = cv2.applyColorMap(density_map_show, cv2.COLORMAP_JET)
-            st.image(density_map_show, caption='Density Map', use_column_width=True, channels='BGR')
+            with col1:
+                st.image(uploaded_file, caption='Input Image', use_column_width=True)
+            with col2:
+                with st.spinner('Processing...'):    
+                    crowd_count, density_map = get_image_prediction(color_converted_image)
+                density_map_show = None
+                density_map_show = cv2.normalize(density_map, density_map_show, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+                density_map_show = cv2.applyColorMap(density_map_show, cv2.COLORMAP_JET)
+                st.image(density_map_show, caption='Density Map', use_column_width=True, channels='BGR')
             st.success('Crowd Count: ' + str(crowd_count))
 
 
@@ -152,7 +155,64 @@ def main():
                     print("Test3")
                     state.run = True
                     trigger_rerun()
-    # elif app_mode == "Live Video Crowd Counting":
+    
+    elif app_mode == "Live Video Crowd Counting":
+        st.title("Live Video Crowd Counting")
+        st.write("Enter the public url of the camera to get the video feed and get corresponding density map feed with crowd counts.")
+
+        if 'video_session_input_state' not in st.session_state:
+            st.session_state['video_session_input_state'] = True
+            st.session_state['url'] = ''
+
+        if st.session_state['video_session_input_state']:
+            form = st.form(key='url-form')
+            url = form.text_input('Enter the url of the camera')
+            submit = form.form_submit_button('Submit')
+            if submit:
+                if url == '':
+                    st.error("Invalid url")
+                else:
+                    st.session_state['video_session_input_state'] = False
+                    st.session_state['url'] = url
+
+        if not st.session_state['video_session_input_state']:
+            vcap = cv2.VideoCapture(st.session_state['url'])
+            frame_counter = 0
+            stop_process = st.button('Stop Process')
+            fps_meas_txt = st.empty()
+            crowd_count_txt = st.empty()
+            real_frame = st.empty()
+            density_map_frame = st.empty()
+            start = time.time()
+
+            while(True):
+                ret, frame = vcap.read()
+                if stop_process:
+                    st.session_state['video_session_input_state'] = True
+                    st.session_state['url'] = ''
+                    break
+                if not ret:
+                    print("Can't receive frame (stream end?). Exiting ...")
+                if frame is not None:
+                    color_converted_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    with st.spinner('Processing...'):    
+                        crowd_count, density_map = get_image_prediction(color_converted_frame)
+                    density_map_show = None
+                    density_map_show = cv2.normalize(density_map, density_map_show, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+                    density_map_show = cv2.applyColorMap(density_map_show, cv2.COLORMAP_JET)
+                    density_map_final = cv2.cvtColor(density_map_show, cv2.COLOR_RGB2BGR)
+                    end = time.time()
+
+                    frame_counter += 1
+                    fps_measurement = frame_counter/(end - start)
+                    fps_meas_txt.markdown(f'**Frames per second:** {fps_measurement:.2f}')
+                    crowd_count_txt.markdown(f'**Crowd Count:** {crowd_count}')
+
+                    real_frame.image(frame, width = 500)
+                    density_map_frame.image(density_map_final, width = 500)
+                else:
+                    break
+
 
 if __name__ == "__main__":
     main()

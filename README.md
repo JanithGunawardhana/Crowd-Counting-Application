@@ -1,7 +1,3 @@
-# Project Description
-
-Automated crowd density monitoring is an emerging area of research. It is a vital technology that assists during recent disease outbreaks in preserving social distancing, crowd management and other widespread applications in public security and traffic control. Modern methods to count people in crowded scenes mainly rely on Convolutional Neural Network (CNN) based models. But the model’s ability to adapt for different domains which is referred to as cross domain crowd countingis a challenging task. To remedy this difficulty, many researchers used Spatial Fully Convolutional Network (SFCN) based crowd counting models with synthetic crowd scene data. They covered many image domains with few-shot learning to reduce the domain adaptation gap between source and target image domains. In this paper, we propose a new multi-layered model architecture instead of SFCN single-layered model architecture. The proposed model extracts more meaningful features in image scenes along with large scale variations to increase the accuracy in cross domain crowd counting. Furthermore, with extensive experiments using four real-world datasets and analysis, we show that the proposed multi-layered architecture performs well with synthetic image data and few-shot learning in reducing domain shifts.
-
 ## Problem Statement
 
 "How to improve the accuracy of Cross Domain Crowd Counting (CDCC) while addressing domain shift by using an improved model architecture that SFCN architecture."
@@ -16,7 +12,7 @@ Automated crowd density monitoring is an emerging area of research. It is a vita
 
 ## Proposed CNN based Model Architecture
 
-![Model Image](https://github.com/JanithGunawardhana/Crowd-Counting-Application/blob/main/Images/model.jpeg "Proposed Model Architecture with Frontend and Backend Networks")
+![Model Image](/Images/model.jpeg?raw=true "Proposed Model Architecture with Frontend and Backend Networks")
 
 Proposed multi layered model architecture consists of two components as,
 
