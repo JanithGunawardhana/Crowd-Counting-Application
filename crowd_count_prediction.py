@@ -11,8 +11,10 @@ transform=transforms.Compose([transforms.ToTensor(),
 
 def get_image_prediction(image):
     img = transform(image)
-    img = img.cpu()
-    output = model(img.unsqueeze(0))
+    # img = img.cpu()
+    img = img[None,:,:,:].cuda()
+    # output = model(img.unsqueeze(0))
+    output = model(img)
     prediction = int(output.detach().cpu().sum().numpy()/100) 
     density_map = output.detach().cpu().numpy()[0][0]
     return prediction, density_map
