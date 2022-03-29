@@ -8,15 +8,10 @@ import numpy as np
 from PIL import Image
 import streamlit as st
 from streamlit.server.server import Server
-
 from crowd_count_prediction import get_image_prediction
 from session_state import SessionState
-
-#@st.cache(show_spinner=False)
-def get_file_content_as_string(path):
-    url = 'https://raw.githubusercontent.com/JanithGunawardhana/Crowd-Counting-Application/main/' + path
-    response = urllib.request.urlopen(url)
-    return response.read().decode("utf-8")
+from fpdf import FPDF
+import base64
 
 def trigger_rerun():
     session_infos = Server.get_current()._session_info_by_id.values() 
@@ -75,16 +70,46 @@ def ProcessFrames(vf, stop):
         density_map_frame.image(density_map_final)
 
 def main():
+    st.set_page_config(
+        page_title="Two Counters: Crowd Density Monitoring",
+        page_icon="movie_camera",
+        layout="wide",
+    )
+    st.sidebar.image("./Images/logo_2.png", use_column_width=True)
     st.sidebar.title("Settings")
-
     app_mode = st.sidebar.selectbox("Choose App Mode",
-        ["Project Details", "Image Based Crowd Counting", "Video Based Crowd Counting", "Live Video Crowd Counting"])
+        ["Project Details", "Proposed Solution", "Image Based Crowd Counting", "Video Based Crowd Counting", "Live Video Crowd Counting"])
+    expander_faq = st.sidebar.expander("More about our project")
+    expander_faq.write("Hi there! If you have any questions about our project, or simply want to check out the source code, please visit our [github repository](https://github.com/JanithGunawardhana/Crowd-Counting-Application)")
 
     if app_mode == "Project Details":
         st.title("Crowd Density Monitoring")
-        st.write("Multi Layered Deep Neural Network for Feature Extraction in Cross Domain Crowd Counting")
-        readme_text = st.markdown(get_file_content_as_string("README.md"))
 
+        st.subheader('Introduction')
+        st.write('* **Crowd Density Monitoring** means keeping track of people count in an identified scene and taking necessary actions to manage the people count.')
+        st.write("* Automated crowd density monitoring is a modern-day emerging research area.")
+        st.write("* Since neural networks can extract meaningful features from a given image, CNN-based methods are currently very popular and proving to be highly accurate and flexible in the task of automated crowd counting.")
+
+        st.subheader('Motivation')
+        st.write('* Automated Crowd Density Monitoring has drawn increased attention in computer vision due to the prevailing contagious outbreaks like Covid-19.')
+        st.write('* Cross Domain Crowd Counting (CDCC) assures an application to be used in any domain which helps for effective automated crowd density monitoring.')
+        st.write('* Serving in many real time applications such as traffic controlling systems, security management systems, and disaster management systems.')
+
+        st.subheader('Problem Statement')
+        st.write('* Many related previous studies carried in CDCC focused on a variety of ways to propose solutions to reduce domain gap between model training synthetic data and model testing real data in order to increase the accuracy in crowd counting.')
+        st.write('* Due to this, crowd counting model architecture did not receive sufficient attention and many used simple Spatial Fully Convolutional Neural Network (SFCN) architecture.')
+        st.write('* Therefore, the problem that we came up with: **_" How to improve the accuracy of CDCC while addressing domain shift by using an improved model architecture than usual SFCN architecture."_**')
+    elif app_mode == "Proposed Solution":
+        st.title("Crowd Density Monitoring")
+        st.write("Multi Layered Deep Neural Network for Feature Extraction in Cross Domain Crowd Counting")
+
+        st.subheader('Proposed CNN based Model Architecture')
+        st.write('Proposed multi layered model architecture consists of two components as,')
+        st.write("1. **_Frontend network_** – A VGG 16 classifier and five feature generation levels as P5, P4, P3, P2, and P1 for predicting density maps in high quality with multi-scale feature representation.")
+        st.write("2. **_Backend network_** - Five multi-module branches and a dilation convolution network for scale variation feature extractions to increase the accuracy in crowd count estimations while maintaining the resolution and high quality of generated density maps.")
+        image = Image.open('./Images/model.jpeg')
+        st.image(image, caption='~~ Proposed CNN based Multi Layered Model Architecture ~~', use_column_width=True)
+        
     elif app_mode == "Image Based Crowd Counting":
         st.title("Image Based Crowd Counting")
         st.write("Select any image and get corresponding density map with crowd count")
@@ -104,6 +129,11 @@ def main():
                 density_map_show = cv2.applyColorMap(density_map_show, cv2.COLORMAP_JET)
                 st.image(density_map_show, caption='Density Map', use_column_width=True, channels='BGR')
             st.success('Crowd Count: ' + str(crowd_count))
+            # pdf = FPDF()
+            # pdf.add_page()
+            # pdf.set_font('Arial', 'B', 16)
+            # pdf.cell(40, 10, 'Crowd Count: '+ str(crowd_count))
+            # pdf.output('tuto1.pdf')
 
 
     elif app_mode == "Video Based Crowd Counting":
